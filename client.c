@@ -130,8 +130,17 @@ void get_reply(int fd)
 int client(const char* server)
 {
 	int fd;
-
+	struct timeval timeout;
 	fd = open_connect(server);
+	timeout.tv_sec=2;    
+	timeout.tv_usec=0;
+	int result = setsockopt(fd,SOL_SOCKET,SO_RCVTIMEO,(char *)&timeout,sizeof(struct timeval));
+	if (result < 0)
+	{
+		perror("setsockopt");
+		return 0;
+	}
+    
 	request(fd);
 	get_reply(fd);
 	close(fd);
